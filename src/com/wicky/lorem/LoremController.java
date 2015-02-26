@@ -12,17 +12,18 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 
 import com.jfinal.core.Controller;
+import com.jfinal.render.JsonRender;
 import com.spreada.utils.chinese.ZHConverter;
 
 public class LoremController extends Controller {
     public void index() throws HttpException, IOException {
         Lorem lorem = getLoremFromRichyliDotCom(true);
-        renderJson(lorem);
+        render(new JsonRender(lorem).forIE());
     }
 
     public void full() throws HttpException, IOException {
         Lorem lorem = getLoremFromRichyliDotCom(false);
-        renderJson(lorem);
+        render(new JsonRender(lorem).forIE());
     }
     
     public void html() throws HttpException, IOException {
