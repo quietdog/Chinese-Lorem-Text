@@ -10,7 +10,7 @@ public class LoremInterceptor implements Interceptor {
         HttpServletRequest request = ai.getController().getRequest();
         String remoteAddr = getIpAddr(request);
         System.out.println(">>>>>>>>>>" + remoteAddr);
-        if ("127.0.0.1".equals(remoteAddr) || "localhost".equals(remoteAddr) || "0.0.0.0".equals(remoteAddr)) {
+        if ("127.0.0.1".equals(remoteAddr) || "localhost".equals(remoteAddr) || "0.0.0.0".equals(remoteAddr) || "0:0:0:0:0:0:0:1".equals(remoteAddr)) {
             ai.invoke();
         } else {
             System.out.println("Distrusted IP Connection: " + remoteAddr);
