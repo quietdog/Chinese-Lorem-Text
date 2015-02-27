@@ -15,7 +15,7 @@
     <filter-class>com.jfinal.core.JFinalFilter</filter-class>
     <init-param>
       <param-name>configClass</param-name>
-      <param-value>com.wicky.lorem.LoremConfig</param-value>
+      <param-value>com.wicky.lorem.Config</param-value>
     </init-param>
   </filter>
   <filter-mapping>

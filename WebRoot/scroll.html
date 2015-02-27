@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+<script data-require="angular.js@1.1.5" data-semver="1.1.5"
+	src="http://apps.bdimg.com/libs/angular.js/1.2.9/angular.min.js" ></script>
+<script type="text/javascript"
+	src="http://apps.bdimg.com/libs/angular.js/1.2.9/angular-sanitize.js"></script>
+<style>
+/* Styles go here */
+.back {
+  color: #2E64FE;
+  float: right;
+  margin-top: 11px;
+}
+</style>
+<script>
+var app = angular.module('app', []);
+app.directive('scrollTo', function ($location, $anchorScroll) {
+  return function(scope, element, attrs) {
+  element.bind('click', function(event) {
+          event.stopPropagation();
+          scope.$on('$locationChangeStart', function(ev) {
+            ev.preventDefault();
+          });
+          var location = attrs.scrollTo;
+          $location.hash(location);
+          $anchorScroll();
+      });
+  };
+});
+
+app.controller('dataCtrl', function($http, $scope, $sce){
+    $scope.ids = [1,2,3,4,5]
+});
+
+</script>
+</head>
+
+<body ng-controller="dataCtrl">
+	<ul id="top">
+		<li ng-repeat="id in ids"><a href="" scroll-to="section{{id}}">Section
+				{{id}}</a></li>
+	</ul>
+	<ol>
+		<li ng-repeat="id in ids">
+			<div id="section{{id}}">
+				<a href="" scroll-to="top" class="back">Back to top</a>
+				<div ng-include="'/lorem/s/html'"></div>
+			</div>
+		</li>
+	</ol>
+
+</body>
+
+</html>

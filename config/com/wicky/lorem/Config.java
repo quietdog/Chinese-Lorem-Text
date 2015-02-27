@@ -8,13 +8,14 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Routes;
 import com.jfinal.render.ViewType;
 
-public class LoremConfig extends JFinalConfig {
+public class Config extends JFinalConfig {
     public void configConstant(Constants me) {
         me.setDevMode(true);
         me.setViewType(ViewType.JSP);
     }
 
     public void configRoute(Routes me) {
+        me.add("/", IndexController.class);
         me.add("/lorem", LoremController.class);
     }
 

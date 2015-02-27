@@ -11,31 +11,65 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 
+import com.jfinal.aop.Before;
+import com.jfinal.core.ActionKey;
 import com.jfinal.core.Controller;
 import com.jfinal.render.JsonRender;
 import com.spreada.utils.chinese.ZHConverter;
 
+@Before(LoremInterceptor.class)
 public class LoremController extends Controller {
+    
+    public enum LanguageType { SIMPLIFIED, TRADITIONAL, BOTH}
+    
     public void index() throws HttpException, IOException {
-        Lorem lorem = getLoremFromRichyliDotCom(true);
-        render(new JsonRender(lorem).forIE());
+
+        Lorem lorem = getLoremFromRichyliDotCom(LanguageType.BOTH);
+        render(new JsonRender(lorem));
     }
 
-    public void full() throws HttpException, IOException {
-        Lorem lorem = getLoremFromRichyliDotCom(false);
-        render(new JsonRender(lorem).forIE());
-    }
-    
     public void html() throws HttpException, IOException {
-        Lorem lorem = getLoremFromRichyliDotCom(true);
-        renderHtml(lorem.getS_data());
+        Lorem lorem = getLoremFromRichyliDotCom(LanguageType.BOTH);
+        renderHtml(generateHtml(lorem.getS_title(), lorem.getS_data()) + generateHtml(lorem.getT_title(), lorem.getT_data()));
     }
     
-	private Lorem getLoremFromRichyliDotCom(boolean simpleOnly) throws IOException, HttpException,
+    public void s() throws HttpException, IOException {
+        Lorem lorem = getLoremFromRichyliDotCom(LanguageType.SIMPLIFIED);
+        render(new JsonRender(lorem));
+    }
+    
+    public void t() throws HttpException, IOException {
+        Lorem lorem = getLoremFromRichyliDotCom(LanguageType.TRADITIONAL);
+        render(new JsonRender(lorem));
+    }
+    
+    @ActionKey("/lorem/s/html")
+    public void simplHtml() throws HttpException, IOException {
+        Lorem lorem = getLoremFromRichyliDotCom(LanguageType.SIMPLIFIED);
+        renderHtml(generateHtml(lorem.getS_title(), lorem.getS_data()));
+    }
+    
+    @ActionKey("/lorem/t/html")
+    public void tradiHtml() throws HttpException, IOException {
+        Lorem lorem = getLoremFromRichyliDotCom(LanguageType.TRADITIONAL);
+        renderHtml(generateHtml(lorem.getT_title(), lorem.getT_data()));
+    }
+    
+	private Lorem getLoremFromRichyliDotCom(LanguageType langType) throws IOException, HttpException,
 			UnsupportedEncodingException {
 		HttpClient client = new HttpClient();
         // 设置代理服务器地址和端口
-//        client.getHostConfiguration().setProxy("cdc-s-tmg1",8080);
+		String proxyAddr = System.getProperty("proxy_addr");
+		String proxyPort = System.getProperty("proxy_port");
+		if(proxyAddr != null && !proxyAddr.isEmpty()){
+		    int port;
+		    try {
+		        port = Integer.valueOf(proxyPort);
+            } catch (Exception e) {
+                port = 8080;
+            }
+	        client.getHostConfiguration().setProxy(proxyAddr,port);
+		}
         // 使用GET方法，如果服务器需要通过HTTPS连接，那只需要将下面URL中的http换成https
         PostMethod method = new PostMethod("http://www.richyli.com/tool/loremipsum/");
         /*
@@ -83,23 +117,27 @@ public class LoremController extends Controller {
             if(bodyFlag){
                 if(data.indexOf("h2") != -1){
                 	
-                	if(!simpleOnly){
+                	if(langType != LanguageType.SIMPLIFIED){
                         int size = length(data);
 						lorem.setT_size(size);
-                        lorem.setT_data(data);
+						lorem.setT_title(extractTitle(data));
+                        lorem.setT_data(extractData(data));
                         System.out.println("t_size: " + size);
                         System.out.println("t_data: " + data);
                 	}
-                    
-                    if(data != null && !data.isEmpty()){
-                        ZHConverter converter = ZHConverter.getInstance(ZHConverter.SIMPLIFIED);
-                        data = converter.convert(data);
-                        int size = length(data);
-						lorem.setS_size(size);
-                        lorem.setS_data(data);
-                        System.out.println("s_size: " + size);
-                        System.out.println("s_data: " + data);
-                    }
+                	
+                    if(langType != LanguageType.TRADITIONAL){
+                        if(data != null && !data.isEmpty()){
+                            ZHConverter converter = ZHConverter.getInstance(ZHConverter.SIMPLIFIED);
+                            data = converter.convert(data);
+                            int size = length(data);
+                            lorem.setS_size(size);
+                            lorem.setS_title(extractTitle(data));
+                            lorem.setS_data(extractData(data));
+                            System.out.println("s_size: " + size);
+                            System.out.println("s_data: " + data);
+                        }
+                	}
                     
                     break;
                 }
@@ -111,6 +149,26 @@ public class LoremController extends Controller {
         method.releaseConnection();
 		return lorem;
 	}
+    
+    private String[] extractData(String data) {
+        return data.substring(data.indexOf("</h2>") + 5).split("\\<p\\>");
+    }
+
+    private String extractTitle(String data) {
+        return data.substring(data.indexOf("<h2>") + 4, data.indexOf("</h2>"));
+    }
+
+    private String generateHtml(String title, String[] data) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<h2>").append(title).append("</h2>");
+        for(String d: data){
+            if(data != null){
+                sb.append("<p>").append(d);
+            }
+        }
+        sb.append("<p>");
+        return sb.toString();
+    }
     
     public static int length(String value) {
         int valueLength = 0;
