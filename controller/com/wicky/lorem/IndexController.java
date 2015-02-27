@@ -13,15 +13,15 @@ public class IndexController extends Controller {
     }
     
     public void xss() throws HttpException, IOException {
-        render("/xss.html");
+        render("/sample/xss.html");
     }
     
     public void interceptor() throws HttpException, IOException {
-        render("/interceptor.html");
+        render("/sample/interceptor.html");
     }
     
     public void scroll() throws HttpException, IOException {
-        render("/scroll.html");
+        render("/sample/scroll.html");
     }
 
     public void scrollData() throws HttpException, IOException {

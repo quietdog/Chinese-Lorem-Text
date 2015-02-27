@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>测试文本在线生成</title>
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css">
+</head>
+<body ng-app="loremApp">
+<div class="container">
+	
+	<h1>随机测试文本在线生成</h1>
+	<hr/>
+	<section>
+	<div ng-controller="loremController">
+	    <div ng-show="loading">Loading ... </div>
+	    <div>
+	        <h2>{{text.s_title}}</h2>
+	        <p ng-repeat="dd in (text.s_data)">{{dd}}</p>
+	        <h2>{{text.t_title}}</h2>
+	        <p ng-repeat="dd in (text.t_data)">{{dd}}</p>
+	        <br/>        
+	    </div>
+	</div>
+	</section>
+
+</div>
+
+<script src="http://apps.bdimg.com/libs/angular.js/1.2.9/angular.min.js"></script>
+<script src="/resources/js/loremApp.js"></script>
+<script src="/resources/js/loremCtrl.js"></script>
+</body>
+</html>

@@ -9,14 +9,15 @@ import com.jfinal.config.Routes;
 import com.jfinal.render.ViewType;
 
 public class Config extends JFinalConfig {
+    
     public void configConstant(Constants me) {
         me.setDevMode(true);
         me.setViewType(ViewType.JSP);
     }
 
     public void configRoute(Routes me) {
-        me.add("/", IndexController.class);
-        me.add("/lorem", LoremController.class);
+        me.add(new FrontRoutes());
+        me.add(new AdminRoutes());
     }
 
     public void configPlugin(Plugins me) {
