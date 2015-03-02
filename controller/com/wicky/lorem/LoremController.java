@@ -19,11 +19,10 @@ import com.spreada.utils.chinese.ZHConverter;
 
 @Before(LoremInterceptor.class)
 public class LoremController extends Controller {
-    
+    public static final Integer DEFAULT_WORDS = 500;
     public enum LanguageType { SIMPLIFIED, TRADITIONAL, BOTH}
     
     public void index() throws HttpException, IOException {
-
         Lorem lorem = getLoremFromRichyliDotCom(LanguageType.BOTH);
         render(new JsonRender(lorem));
     }
@@ -96,7 +95,7 @@ public class LoremController extends Controller {
         method.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         method.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 SE 2.X MetaSr 1.0");
         
-        NameValuePair[] param = {new NameValuePair("words","500")} ;  
+		NameValuePair[] param = {new NameValuePair("words", getAttrForStr("words"))} ;  
         method.setRequestBody(param);  
         client.executeMethod(method);
         // 打印服务器返回的状态

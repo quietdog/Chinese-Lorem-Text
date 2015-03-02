@@ -11,6 +11,11 @@ public class LoremInterceptor implements Interceptor {
         String remoteAddr = getIpAddr(request);
         System.out.println(">>>>>>>>>>" + remoteAddr);
         if ("127.0.0.1".equals(remoteAddr) || "localhost".equals(remoteAddr) || "0.0.0.0".equals(remoteAddr) || "0:0:0:0:0:0:0:1".equals(remoteAddr)) {
+        	Integer words = ai.getController().getParaToInt("w", LoremController.DEFAULT_WORDS);
+        	if(words > 1000){
+        		words = 1000;
+        	}
+        	ai.getController().setAttr("words", words + "");
             ai.invoke();
         } else {
             System.out.println("Distrusted IP Connection: " + remoteAddr);
